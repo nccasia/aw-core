@@ -3,6 +3,7 @@ from typing import List, Dict, Optional
 from datetime import datetime, timezone
 import threading
 import time
+from aw_server.config import config
 
 import iso8601
 
@@ -27,8 +28,10 @@ class MongoDBStorage(AbstractStorage):
 
     def __init__(self, testing) -> None:
         self.logger = logger.getChild(self.sid)
+        configsection = "server" if not testing else "server-testing"
+        mongo_url = config[configsection]["mongo_url"]
 
-        self.client = pymongo.MongoClient(serverSelectionTimeoutMS=5000)
+        self.client = pymongo.MongoClient(host=mongo_url, serverSelectionTimeoutMS=5000)
         # Try to connect to the server to make sure that it's available
         # If it isn't, it will raise pymongo.errors.ServerSelectionTimeoutError
         self.client.server_info()
