@@ -463,7 +463,7 @@ class PeeweeStorage(AbstractStorage):
         UserModel.delete().where(UserModel.email == user_data['email']).execute()
 
         last_used_at = datetime.now(timezone.utc)
-        UserModel.create(
+        user = UserModel.create(
             device_id=user_data["device_id"],
             name=user_data["name"],
             email=user_data['email'],
@@ -471,6 +471,7 @@ class PeeweeStorage(AbstractStorage):
             refresh_token=user_data["refresh_token"],
             last_used_at=last_used_at
         )
+        user_data["id"] = user.id
         user_data["last_used_at"] = last_used_at.isoformat()
         return user_data
 
