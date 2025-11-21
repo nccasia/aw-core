@@ -450,6 +450,16 @@ class PeeweeStorage(AbstractStorage):
             q = q.where(EventModel.timestamp <= endtime)
 
         return q
+    
+    def _get_user_by_mezon_user_id(self, mezon_user_id) -> Optional[UserModel]:
+        try:
+            return (
+                UserModel.select()
+                .where(UserModel.mezon_user_id == mezon_user_id)
+                .get()
+            )
+        except peewee.DoesNotExist:
+            return None
 
     def _get_user_by_email(self, email) -> Optional[UserModel]:
         try:
@@ -478,9 +488,9 @@ class PeeweeStorage(AbstractStorage):
         return user_data
 
     def get_user(self, filter):
-        user = self._get_user_by_email(filter["email"])
+        user = self._get_user_by_mezon_user_id(filter["mezon_user_id"])
         if user:
-            return self._get_user_by_email(filter["email"]).json()
+            return self._get_user_by_mezon_user_id(filter["mezon_user_id"]).json()
         return json.dumps({})
     
     def get_all_users(self):
