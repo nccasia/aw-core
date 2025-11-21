@@ -102,6 +102,7 @@ class UserModel(BaseModel):
     device_id = CharField()
     name = CharField()
     email = CharField(unique=True)
+    mezon_user_id = CharField(unique=True)
     access_token = CharField(max_length=4096)
     refresh_token = CharField(max_length=4096)
     last_used_at = DateTimeTZField(null=True)
@@ -114,6 +115,7 @@ class UserModel(BaseModel):
             "email": self.email,
             "access_token": self.access_token,
             "refresh_token": self.refresh_token,
+            "mezon_user_id": self.mezon_user_id,
             "last_used_at": self.last_used_at
         }
 
@@ -469,9 +471,9 @@ class PeeweeStorage(AbstractStorage):
             email=user_data['email'],
             access_token=user_data["access_token"], 
             refresh_token=user_data["refresh_token"],
+            mezon_user_id=user_data["mezon_user_id"] if "mezon_user_id" in user_data else None,
             last_used_at=last_used_at
         )
-        user_data["id"] = user.id
         user_data["last_used_at"] = last_used_at.isoformat()
         return user_data
 
