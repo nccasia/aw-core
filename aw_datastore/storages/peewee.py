@@ -501,7 +501,7 @@ class PeeweeStorage(AbstractStorage):
         return result
 
     def get_use_tracker(self, day=datetime.now().date()):
-        users = UserModel.select().where(peewee.fn.date_trunc('day', UserModel.last_used_at) >= day)
+        users = UserModel.select().where(peewee.fn.date_trunc('day', UserModel.last_used_at.op('AT TIME ZONE')('Asia/Ho_Chi_Minh')) >= day)
         result = []
         for user in users:
             result.append(user.json())
