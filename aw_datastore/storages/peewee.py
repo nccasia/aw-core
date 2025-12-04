@@ -26,6 +26,7 @@ from aw_core.dirs import get_data_dir
 
 from .abstract import AbstractStorage
 from playhouse.migrate import *
+import pytz
 
 logger = logging.getLogger(__name__)
 
@@ -501,8 +502,13 @@ class PeeweeStorage(AbstractStorage):
         return result
 
     def get_use_tracker(self, day=datetime.now().date()):
-        day = datetime.combine(day, datetime.min.time()).replace(tzinfo=timezone.utc) - timedelta(hours=7) # Adjusting for timezone difference
-        users = UserModel.select().where(peewee.fn.date_trunc('day', UserModel.last_used_at) >= day)
+        # Timezone VN
+        tz = pytz.timezone("Asia/Ho_Chi_Minh")
+
+        # Start of yesterday (00:00:00)
+        start_dt = tz.localize(datetime.combine(day, time.min))
+        start_utc = start_dt.astimezone(pytz.UTC)
+        users = UserModel.select().where(UserModel.last_used_at >= start_utc)
         result = []
         for user in users:
             result.append(user.json())
