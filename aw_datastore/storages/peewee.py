@@ -19,6 +19,7 @@ from peewee import (
     BooleanField
 )
 from playhouse.postgres_ext import *
+from playhouse.pool import PooledPostgresqlExtDatabase
 
 from aw_core.models import Event
 from aw_core.dirs import get_data_dir
@@ -37,11 +38,15 @@ peewee_logger.setLevel(logging.INFO)
 #   See: http://docs.peewee-orm.com/en/latest/peewee/database.html#run-time-database-configuration
 # Another option would be to use peewee's Proxy.
 #   See: http://docs.peewee-orm.com/en/latest/peewee/database.html#dynamic-db
-_db = PostgresqlExtDatabase(
+_db = PooledPostgresqlExtDatabase(
     'komutracker',  # Required by Peewee.
     user='komutracker',  # Will be passed directly to psycopg2.
     password='1q2w#E$R',  # Ditto.
-    host='localhost')  # Ditto.
+    host='localhost',
+    max_connections=32,
+    stale_timeout=300,
+    timeout=30,
+)
 
 
 LATEST_VERSION = 2
